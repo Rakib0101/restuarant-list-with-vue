@@ -24,9 +24,9 @@
                     <router-link :to="'/update-restuarant/'+item.id">
                         <img src="../assets/edit.png" alt="">
                     </router-link>
-                    <router-link :to="'/delete-restuarant/'+item.id">
+                    <button v-on:click="deleteRestuarant(item.id)">
                         <img src="../assets/delete.png" alt="">
-                    </router-link>
+                    </button>
                 </td>
             </tr>
         </tbody>
@@ -48,17 +48,28 @@ export default {
             restuarants: []
         }
     },
-    async mounted() {
-        let user = localStorage.getItem('user-info');
-        this.name = JSON.parse(user).name
-        if (!user) {
-            this.$router.push({
-                name: 'SignUp'
-            })
-        }
-        let result = await axios.get("http://localhost:3000/restuarants")
+    methods: {
+        async deleteRestuarant(id) {
+            let result = await axios.delete("http://localhost:3000/restuarants/" + id)
+            if (result.status == 200) {
+                this.loadData()
+            }
+        },
+        async loadData() {
+            let user = localStorage.getItem('user-info');
+            this.name = JSON.parse(user).name
+            if (!user) {
+                this.$router.push({
+                    name: 'SignUp'
+                })
+            }
+            let result = await axios.get("http://localhost:3000/restuarants")
 
-        this.restuarants = result.data
+            this.restuarants = result.data
+        }
+    },
+    mounted() {
+        this.loadData()
     }
 }
 </script>
